@@ -1,0 +1,9 @@
+{
+	"name": "som-datafactory-1",
+	"location": "eastasia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a44134aa-770f-4e35-b946-96d0b7c4b7ea",
+		"tenantId": "94debaed-0b53-435a-8dd0-2c6230cdfaa4"
+	}
+}
