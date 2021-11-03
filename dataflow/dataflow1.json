@@ -28,9 +28,12 @@
 				},
 				{
 					"name": "AggregateRatings"
+				},
+				{
+					"name": "AlterRow1"
 				}
 			],
-			"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\tRottenTomato as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> MoviesADLS\nMoviesADLS select(mapColumn(\n\t\tmovie,\n\t\ttitle,\n\t\tgenres,\n\t\tyear,\n\t\tRottenTomato\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 filter(toInteger(year)>=1951) ~> Filter1\nFilter1 derive(PrimaryGenre = iif(locate('|', genres)>1, left(genres, locate('|', genres)-1 ), genres)) ~> PrimaryGenre\nPrimaryGenre window(over(PrimaryGenre,\n\t\tyear),\n\tasc(RottenTomato, true),\n\tRatingsRank = rank()) ~> Window1\nWindow1 aggregate(groupBy(PrimaryGenre,\n\t\tyear),\n\tAverageRating = avg(toInteger(RottenTomato)),\n\t\tHighestRated = first(title),\n\t\tLowesetRated = last(title),\n\t\tNumberOfMovies = count()) ~> AggregateRatings"
+			"script": "source(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\tRottenTomato as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> MoviesADLS\nMoviesADLS select(mapColumn(\n\t\tmovie,\n\t\ttitle,\n\t\tgenres,\n\t\tyear,\n\t\tRottenTomato\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 filter(toInteger(year)>=1951) ~> Filter1\nFilter1 derive(PrimaryGenre = iif(locate('|', genres)>1, left(genres, locate('|', genres)-1 ), genres)) ~> PrimaryGenre\nPrimaryGenre window(over(PrimaryGenre,\n\t\tyear),\n\tasc(RottenTomato, true),\n\tRatingsRank = rank()) ~> Window1\nWindow1 aggregate(groupBy(PrimaryGenre,\n\t\tyear),\n\tAverageRating = avg(toInteger(RottenTomato)),\n\t\tHighestRated = first(title),\n\t\tLowesetRated = last(title),\n\t\tNumberOfMovies = count()) ~> AggregateRatings\nAggregateRatings alterRow(upsertIf(true())) ~> AlterRow1"
 		}
 	}
 }
