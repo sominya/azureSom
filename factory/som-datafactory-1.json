@@ -1,5 +1,13 @@
 {
 	"name": "som-datafactory-1",
+	"properties": {
+		"globalParameters": {
+			"SCD_DEV": {
+				"type": "string",
+				"value": "SCD_DEV"
+			}
+		}
+	},
 	"location": "eastasia",
 	"identity": {
 		"type": "SystemAssigned",
